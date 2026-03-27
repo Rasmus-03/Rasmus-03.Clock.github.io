@@ -1,67 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="da">
 <head>
 <meta charset="UTF-8">
 <title>Find x⁺ and x⁻</title>
 <style>
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background: #111;
-    color: pink;
-    padding-top: 120px;
-}
-h1 {
-    font-size: 28px;
-}
-.formula {
-    font-size: 34px;
-    margin-top: 40px;
-    color: #00ffcc;
-}
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: #111;
+        color: pink;
+        padding-top: 120px;
+        margin: 0;
+    }
+    h1 {
+        font-size: 28px;
+    }
+    .formula {
+        font-size: 34px;
+        margin-top: 40px;
+        color: #00ffcc;
+    }
+    /* Joke boks styling */
+    #joke-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        max-width: 280px;
+        background: #222;
+        border: 2px solid #00ffcc;
+        padding: 15px;
+        border-radius: 12px;
+        color: pink;
+        text-align: left;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        font-size: 14px;
+        line-height: 1.4;
+        z-index: 1000;
+    }
+    #joke-header {
+        color: #00ffcc;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 8px;
+        font-size: 16px;
+    }
 </style>
 </head>
 <body>
 
-<h1>
-This quadratic equation represents the exact current time.<br>
-Find x⁺ and x⁻.
-</h1>
+    <h1>
+        This quadratic equation represents the exact current time.<br>
+        Find x⁺ and x⁻.
+    </h1>
 
-<div class="formula" id="formula"></div>
+    <div class="formula" id="formula"></div>
 
-<script>
-function updateTime() {
-    const now = new Date();
+    <!-- Joke of the Day boks -->
+    <div id="joke-container">
+        <span id="joke-header">🃏 Joke of the Day:</span>
+        <div id="joke-text">Indlæser joke...</div>
+    </div>
 
-    let H = now.getHours();
-    let M = now.getMinutes();
+    <script>
+        // --- UR LOGIK ---
+        function updateTime() {
+            const now = new Date();
+            let H = now.getHours();
+            let M = now.getMinutes();
 
-    // Build quadratic with roots:
-    // x⁺ = H
-    // x⁻ = -M
+            // Build quadratic with roots: x⁺ = H, x⁻ = -M
+            let b = M - H;
+            let c = -H * M;
 
-    let b = M - H;
-    let c = -H * M;
+            let formula = `x²`;
+            if (b !== 0) {
+                formula += b > 0 ? ` + ${b}x` : ` - ${Math.abs(b)}x`;
+            }
+            if (c !== 0) {
+                formula += c > 0 ? ` + ${c}` : ` - ${Math.abs(c)}`;
+            }
+            formula += " = 0";
 
-    let formula = `x²`;
+            document.getElementById("formula").innerHTML = formula;
+        }
 
-    if (b !== 0) {
-        formula += b > 0 ? ` + ${b}x` : ` - ${Math.abs(b)}x`;
-    }
+        // --- JOKE LOGIK ---
+        async function fetchJoke() {
+            try {
+                const response = await fetch("https://icanhazdadjoke.com", {
+                    headers: { "Accept": "application/json" }
+                });
+                const data = await response.json();
+                document.getElementById("joke-text").innerText = data.joke;
+            } catch (error) {
+                document.getElementById("joke-text").innerText = "Kunne ikke hente joke lige nu.";
+            }
+        }
 
-    if (c !== 0) {
-        formula += c > 0 ? ` + ${c}` : ` - ${Math.abs(c)}`;
-    }
-
-    formula += " = 0";
-
-    document.getElementById("formula").innerHTML = formula;
-}
-
-setInterval(updateTime, 1000);
-updateTime();
-</script>
+        // Start det hele
+        setInterval(updateTime, 1000);
+        updateTime();
+        fetchJoke();
+    </script>
 
 </body>
 </html>
